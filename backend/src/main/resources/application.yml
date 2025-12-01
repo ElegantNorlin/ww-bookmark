@@ -1,0 +1,25 @@
+spring:
+  # 应用名称
+  application:
+    name: backend
+
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://117.72.37.69:3306/ww?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: haozhang0309
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # Hikari连接池配置
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+
+# MyBatis Plus配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
