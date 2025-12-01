@@ -27,7 +27,7 @@ router.beforeEach((to, from, next) => {
   // 检查路由是否需要认证
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   // 检查是否已登录
-  const isLoggedIn = localStorage.getItem('token') !== null
+  const isLoggedIn = localStorage.getItem('access_token') !== null
   
   if (requiresAuth && !isLoggedIn) {
     // 需要认证但未登录，跳转到登录页

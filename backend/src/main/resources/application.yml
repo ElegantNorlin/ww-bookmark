@@ -17,6 +17,21 @@ spring:
       idle-timeout: 30000
       connection-timeout: 30000
       max-lifetime: 1800000
+  
+  # Redis配置
+  data:
+    redis:
+      host: 117.72.37.69
+      port: 6379
+      password: haozhang0309
+      database: 1
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
 
 # MyBatis Plus配置
 mybatis-plus:

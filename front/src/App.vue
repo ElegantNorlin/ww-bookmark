@@ -1,9 +1,8 @@
 <script setup>
-import BookmarkLayout from './components/BookmarkLayout.vue'
 </script>
 
 <template>
-  <BookmarkLayout />
+  <router-view />
 </template>
 
 <style>

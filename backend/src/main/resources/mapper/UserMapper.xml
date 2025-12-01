@@ -10,4 +10,14 @@
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
     </resultMap>
+    
+    <!-- 根据用户名查询用户 -->
+    <select id="selectByUsername" resultMap="BaseResultMap" parameterType="string">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+    
+    <!-- 根据邮箱查询用户 -->
+    <select id="selectByEmail" resultMap="BaseResultMap" parameterType="string">
+        SELECT * FROM user WHERE email = #{email}
+    </select>
 </mapper>

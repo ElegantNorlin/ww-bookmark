@@ -98,24 +98,21 @@ const handleSubmit = async () => {
   try {
     if (isLogin.value) {
       // 登录请求
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
+      const response = await axios.post('http://localhost:8080/api/login', {
         username: form.value.username,
         password: form.value.password
       })
       
-      // 保存token到localStorage
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify({
-        id: response.data.id,
-        username: response.data.username,
-        email: response.data.email
-      }))
+      // 保存token和用户信息到localStorage
+      localStorage.setItem('access_token', response.data.access_token)
+      localStorage.setItem('refresh_token', response.data.refresh_token)
+      localStorage.setItem('user', JSON.stringify(response.data.user))
       
       // 跳转到首页
       router.push('/')
     } else {
       // 注册请求
-      const response = await axios.post('http://localhost:8080/api/auth/register', {
+      const response = await axios.post('http://localhost:8080/api/register', {
         username: form.value.username,
         email: form.value.email,
         password: form.value.password
@@ -126,7 +123,7 @@ const handleSubmit = async () => {
     }
   } catch (err) {
     // 处理错误信息
-    error.value = err.response?.data || '操作失败，请稍后重试'
+    error.value = err.response?.data?.message || '操作失败，请稍后重试'
   }
 }
 </script>

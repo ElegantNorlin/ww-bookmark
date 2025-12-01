@@ -2,6 +2,7 @@ package com.wanwan.backend.controller;
 
 import com.wanwan.backend.entity.User;
 import com.wanwan.backend.service.UserService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     @GetMapping
