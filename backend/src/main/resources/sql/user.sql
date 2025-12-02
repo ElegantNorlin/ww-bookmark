@@ -1,6 +1,6 @@
 -- 创建用户表
 CREATE TABLE IF NOT EXISTS `user` (
-  `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
+  `id` VARCHAR(30) PRIMARY KEY COMMENT '用户ID，雪花算法生成',
   `username` VARCHAR(50) UNIQUE COMMENT '用户名',
   `email` VARCHAR(100) UNIQUE COMMENT '邮箱',
   `password` VARCHAR(100) COMMENT '密码',

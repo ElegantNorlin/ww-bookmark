@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseResult<?> getUserById(@PathVariable Long id) {
+    public ResponseResult<?> getUserById(@PathVariable String id) {
         User user = userService.getById(id);
         if (user != null) {
             return ResponseResult.success(user);
@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseResult<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseResult<?> updateUser(@PathVariable String id, @RequestBody User user) {
         user.setId(id);
         boolean success = userService.updateById(user);
         if (success) {
@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteUser(@PathVariable Long id) {
+    public ResponseResult<?> deleteUser(@PathVariable String id) {
         boolean success = userService.removeById(id);
         if (success) {
             return ResponseResult.success("删除用户成功");

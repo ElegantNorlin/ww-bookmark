@@ -10,10 +10,10 @@ import lombok.EqualsAndHashCode;
 @TableName("bookmark")
 public class Bookmark extends BaseEntity {
     @TableField("user_id")
-    private Long userId;
+    private String userId;
 
     @TableField("folder_id")
-    private Long folderId;
+    private String folderId;
 
     @TableField("title")
     private String title;

@@ -13,10 +13,10 @@ import lombok.Data;
 @Data
 public class BaseEntity {
     /**
-     * 主键ID，使用雪花算法生成
+     * 主键ID，使用雪花算法生成，存储为字符串
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Long id;
+    private String id;
 
     /**
      * 逻辑删除

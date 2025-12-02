@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> implements FolderService {
     
     @Override
-    public List<Map<String, Object>> getUserFolderTree(Long userId) {
+    public List<Map<String, Object>> getUserFolderTree(String userId) {
         // 获取用户的所有文件夹
         List<Folder> folders = getUserFolders(userId);
         // 构建并返回文件夹树结构
@@ -21,18 +21,13 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     }
     
     @Override
-    public List<Map<String, Object>> buildFolderTree(List<Folder> folders, Long parentId) {
+    public List<Map<String, Object>> buildFolderTree(List<Folder> folders, String parentId) {
         List<Map<String, Object>> folderTree = new ArrayList<>();
         
-        // 使用Map缓存所有文件夹，以id为key，便于查找
-        Map<Long, Folder> folderMap = folders.stream()
-                .collect(Collectors.toMap(Folder::getId, folder -> folder));
-        
-        // 找出所有顶级文件夹（parentId为null或0的文件夹）
+        // 找出所有顶级文件夹（parentId为null的文件夹）
         folders.stream()
                 .filter(folder -> Objects.equals(folder.getParentId(), parentId) || 
-                                 (parentId == null && folder.getParentId() == null) ||
-                                 (parentId == 0L && folder.getParentId() == null))
+                                 (parentId == null && folder.getParentId() == null))
                 .forEach(folder -> {
                     Map<String, Object> folderNode = convertToTreeNode(folder);
                     // 递归查找子文件夹
@@ -44,7 +39,7 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     }
     
     @Override
-    public List<Folder> getUserFolders(Long userId) {
+    public List<Folder> getUserFolders(String userId) {
         QueryWrapper<Folder> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId)
                    .eq("is_delete", 0)
@@ -53,7 +48,7 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     }
     
     @Override
-    public List<Folder> getFolderWithChildren(Long folderId) {
+    public List<Folder> getFolderWithChildren(String folderId) {
         List<Folder> result = new ArrayList<>();
         // 首先获取指定的文件夹
         Folder folder = getById(folderId);
@@ -83,7 +78,7 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     /**
      * 查找指定父文件夹的所有子文件夹
      */
-    private List<Map<String, Object>> findChildren(List<Folder> folders, Long parentId) {
+    private List<Map<String, Object>> findChildren(List<Folder> folders, String parentId) {
         List<Map<String, Object>> children = new ArrayList<>();
         
         folders.stream()
@@ -101,7 +96,7 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     /**
      * 递归添加所有子文件夹
      */
-    private void addChildren(List<Folder> result, Long parentId) {
+    private void addChildren(List<Folder> result, String parentId) {
         QueryWrapper<Folder> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("parent_id", parentId)
                    .eq("is_delete", 0);

@@ -10,5 +10,5 @@ public interface BookmarkService extends IService<Bookmark> {
      * @param userId 用户ID
      * @return 书签列表
      */
-    List<Bookmark> getUserBookmarks(Long userId);
+    List<Bookmark> getUserBookmarks(String userId);
 }

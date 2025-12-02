@@ -10,10 +10,10 @@ import lombok.EqualsAndHashCode;
 @TableName("folder")
 public class Folder extends BaseEntity {
     @TableField("user_id")
-    private Long userId;
+    private String userId;
 
     @TableField("parent_id")
-    private Long parentId;
+    private String parentId;
 
     @TableField("ancestors")
     private String ancestors;

@@ -39,7 +39,7 @@ public class UserContext {
      * 获取当前线程的用户ID
      * @return 用户ID，如果没有设置则返回null
      */
-    public static Long getUserId() {
+    public static String getUserId() {
         User user = getUser();
         return user != null ? user.getId() : null;
     }

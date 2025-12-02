@@ -12,7 +12,7 @@ import java.util.List;
 public class BookmarkServiceImpl extends ServiceImpl<BookmarkMapper, Bookmark> implements BookmarkService {
     
     @Override
-    public List<Bookmark> getUserBookmarks(Long userId) {
+    public List<Bookmark> getUserBookmarks(String userId) {
         QueryWrapper<Bookmark> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         // 可以根据需要添加排序等条件

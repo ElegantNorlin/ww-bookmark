@@ -32,7 +32,7 @@ public class BookmarkController {
     }
 
     @GetMapping("/{id}")
-    public ResponseResult<?> getBookmarkById(@PathVariable Long id) {
+    public ResponseResult<?> getBookmarkById(@PathVariable String id) {
         try {
             User currentUser = UserContext.getCurrentUser();
             if (currentUser == null) {
@@ -78,7 +78,7 @@ public class BookmarkController {
     }
 
     @PutMapping("/{id}")
-    public ResponseResult<?> updateBookmark(@PathVariable Long id, @RequestBody Bookmark bookmark) {
+    public ResponseResult<?> updateBookmark(@PathVariable String id, @RequestBody Bookmark bookmark) {
         try {
             User currentUser = UserContext.getCurrentUser();
             if (currentUser == null) {
@@ -111,7 +111,7 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteBookmark(@PathVariable Long id) {
+    public ResponseResult<?> deleteBookmark(@PathVariable String id) {
         try {
             User currentUser = UserContext.getCurrentUser();
             if (currentUser == null) {

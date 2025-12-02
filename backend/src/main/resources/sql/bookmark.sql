@@ -1,8 +1,8 @@
 -- 创建书签表
 CREATE TABLE IF NOT EXISTS `bookmark` (
-  `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '书签ID',
-  `user_id` BIGINT COMMENT '所属用户ID',
-  `folder_id` BIGINT COMMENT '所属文件夹ID',
+  `id` VARCHAR(30) PRIMARY KEY COMMENT '书签ID，雪花算法生成',
+  `user_id` VARCHAR(30) COMMENT '所属用户ID',
+  `folder_id` VARCHAR(30) COMMENT '所属文件夹ID',
   `title` VARCHAR(200) COMMENT '书签标题',
   `url` VARCHAR(500) COMMENT '书签URL',
   `icon` VARCHAR(500) DEFAULT NULL COMMENT '书签图标',

@@ -25,7 +25,7 @@ public class FolderController {
     @GetMapping("/tree")
     public ResponseResult<?> getUserFolderTree() {
         try {
-            Long userId = getCurrentUserId();
+            String userId = getCurrentUserId();
             List<?> folderTree = folderService.getUserFolderTree(userId);
             return ResponseResult.success(folderTree);
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class FolderController {
     @GetMapping
     public ResponseResult<?> getUserFolders() {
         try {
-            Long userId = getCurrentUserId();
+            String userId = getCurrentUserId();
             List<Folder> folders = folderService.getUserFolders(userId);
             return ResponseResult.success(folders);
         } catch (Exception e) {
@@ -51,9 +51,9 @@ public class FolderController {
      * 根据ID获取文件夹详情
      */
     @GetMapping("/{id}")
-    public ResponseResult<?> getFolderById(@PathVariable Long id) {
+    public ResponseResult<?> getFolderById(@PathVariable String id) {
         try {
-            Long userId = getCurrentUserId();
+            String userId = getCurrentUserId();
             Folder folder = folderService.getById(id);
             
             // 验证文件夹是否存在且属于当前用户
@@ -76,7 +76,7 @@ public class FolderController {
     @PostMapping
     public ResponseResult<?> createFolder(@RequestBody Folder folder) {
         try {
-            Long userId = getCurrentUserId();
+            String userId = getCurrentUserId();
             folder.setUserId(userId);
             
             // 如果是子文件夹，验证父文件夹是否存在且属于当前用户
@@ -94,7 +94,7 @@ public class FolderController {
                 if (parentFolder.getAncestors() != null) {
                     folder.setAncestors(parentFolder.getAncestors() + "," + parentFolder.getId());
                 } else {
-                    folder.setAncestors(parentFolder.getId().toString());
+                    folder.setAncestors(parentFolder.getId());
                 }
             }
             
@@ -113,9 +113,9 @@ public class FolderController {
      * 更新文件夹信息
      */
     @PutMapping("/{id}")
-    public ResponseResult<?> updateFolder(@PathVariable Long id, @RequestBody Folder folder) {
+    public ResponseResult<?> updateFolder(@PathVariable String id, @RequestBody Folder folder) {
         try {
-            Long userId = getCurrentUserId();
+            String userId = getCurrentUserId();
             folder.setId(id);
             
             // 验证文件夹是否存在且属于当前用户
@@ -144,7 +144,7 @@ public class FolderController {
                 if (parentFolder.getAncestors() != null) {
                     folder.setAncestors(parentFolder.getAncestors() + "," + parentFolder.getId());
                 } else {
-                    folder.setAncestors(parentFolder.getId().toString());
+                    folder.setAncestors(parentFolder.getId());
                 }
                 
                 // TODO: 更新所有子文件夹的ancestors字段
@@ -165,9 +165,9 @@ public class FolderController {
      * 删除文件夹（软删除）
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteFolder(@PathVariable Long id) {
+    public ResponseResult<?> deleteFolder(@PathVariable String id) {
         try {
-            Long userId = getCurrentUserId();
+            String userId = getCurrentUserId();
             
             // 验证文件夹是否存在且属于当前用户
             Folder folder = folderService.getById(id);
@@ -201,7 +201,7 @@ public class FolderController {
     /**
      * 获取当前登录用户的ID
      */
-    private Long getCurrentUserId() {
+    private String getCurrentUserId() {
         User currentUser = UserContext.getCurrentUser();
         if (currentUser == null) {
             throw new RuntimeException("用户未登录");
