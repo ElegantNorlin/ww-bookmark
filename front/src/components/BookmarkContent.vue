@@ -62,6 +62,17 @@ const currentBookmarks = computed(() => {
 const isEmpty = computed(() => {
   return currentSubfolders.value.length === 0 && currentBookmarks.value.length === 0
 })
+
+// 处理书签点击事件
+const handleBookmarkClick = (bookmark) => {
+  // 确保URL格式正确，没有协议时添加http://
+  let url = bookmark.url
+  if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'http://' + url
+  }
+  // 在新标签页中打开书签URL
+  window.open(url, '_blank')
+}
 </script>
 
 <template>
@@ -103,6 +114,7 @@ const isEmpty = computed(() => {
           v-for="bookmark in currentBookmarks" 
           :key="bookmark.id"
           class="content-item"
+          @click="handleBookmarkClick(bookmark)"
         >
           <div class="content-info">
             <img 
