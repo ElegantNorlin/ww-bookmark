@@ -1,8 +1,9 @@
 -- 创建文件夹表
 CREATE TABLE IF NOT EXISTS `folder` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '文件夹ID',
-  `user_id` BIGINT NOT NULL COMMENT '所属用户ID',
+  `user_id` BIGINT COMMENT '所属用户ID',
   `parent_id` BIGINT DEFAULT NULL COMMENT '父文件夹ID，null表示根文件夹',
+  `ancestors` TEXT DEFAULT NULL COMMENT '祖先节点ID集合：如「1,12」（1=顶级ID，12=父ID）',
   `name` VARCHAR(100) NOT NULL COMMENT '文件夹名称',
   `id_delete` INT(5) DEFAULT NULL COMMENT '是否逻辑删除',
   `created_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

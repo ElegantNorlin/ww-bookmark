@@ -1,10 +1,10 @@
 -- 创建书签表
 CREATE TABLE IF NOT EXISTS `bookmark` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '书签ID',
-  `user_id` BIGINT NOT NULL COMMENT '所属用户ID',
-  `folder_id` BIGINT NOT NULL COMMENT '所属文件夹ID',
-  `title` VARCHAR(200) NOT NULL COMMENT '书签标题',
-  `url` VARCHAR(500) NOT NULL COMMENT '书签URL',
+  `user_id` BIGINT COMMENT '所属用户ID',
+  `folder_id` BIGINT COMMENT '所属文件夹ID',
+  `title` VARCHAR(200) COMMENT '书签标题',
+  `url` VARCHAR(500) COMMENT '书签URL',
   `icon` VARCHAR(500) DEFAULT NULL COMMENT '书签图标',
   `description` TEXT DEFAULT NULL COMMENT '书签描述',
   `id_delete` INT(5) DEFAULT NULL COMMENT '是否逻辑删除',

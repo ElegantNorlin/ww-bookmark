@@ -6,6 +6,7 @@
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
         <result column="parent_id" property="parentId"/>
+        <result column="ancestors" property="ancestors"/>
         <result column="name" property="name"/>
         <result column="is_delete" property="isDelete"/>
         <result column="created_time" property="createdTime"/>

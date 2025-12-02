@@ -15,6 +15,9 @@ public class Folder extends BaseEntity {
     @TableField("parent_id")
     private Long parentId;
 
+    @TableField("ancestors")
+    private String ancestors;
+
     @TableField("name")
     private String name;
 }
