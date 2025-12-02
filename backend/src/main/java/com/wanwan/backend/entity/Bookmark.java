@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@TableName("bookmark")
 @EqualsAndHashCode(callSuper = true)
+@TableName("bookmark")
 public class Bookmark extends BaseEntity {
     @TableField("user_id")
     private Long userId;

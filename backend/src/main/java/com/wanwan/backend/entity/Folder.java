@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@TableName("folder")
 @EqualsAndHashCode(callSuper = true)
+@TableName("folder")
 public class Folder extends BaseEntity {
     @TableField("user_id")
     private Long userId;

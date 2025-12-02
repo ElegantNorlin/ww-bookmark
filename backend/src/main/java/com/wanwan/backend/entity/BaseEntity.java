@@ -21,7 +21,7 @@ public class BaseEntity {
     /**
      * 逻辑删除
      */
-    @TableId
+    @TableField("is_delete")
     private Integer isDelete = 0;
 
     /**
