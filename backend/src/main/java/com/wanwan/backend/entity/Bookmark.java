@@ -1,18 +1,14 @@
 package com.wanwan.backend.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.time.LocalDateTime;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @TableName("bookmark")
-public class Bookmark {
-    @TableId(type = IdType.AUTO)
-    private Long id;
-
+@EqualsAndHashCode(callSuper = true)
+public class Bookmark extends BaseEntity {
     @TableField("user_id")
     private Long userId;
 
@@ -30,10 +26,4 @@ public class Bookmark {
 
     @TableField("description")
     private String description;
-
-    @TableField("created_time")
-    private LocalDateTime createdTime;
-
-    @TableField("updated_time")
-    private LocalDateTime updatedTime;
 }
