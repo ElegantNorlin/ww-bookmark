@@ -10,6 +10,7 @@
         <result column="url" property="url"/>
         <result column="icon" property="icon"/>
         <result column="description" property="description"/>
+        <result column="is_delete" property="isDelete"/>
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
     </resultMap>

@@ -7,6 +7,7 @@
         <result column="username" property="username"/>
         <result column="email" property="email"/>
         <result column="password" property="password"/>
+        <result column="is_delete" property="isDelete"/>
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
     </resultMap>

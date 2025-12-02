@@ -19,6 +19,12 @@ public class BaseEntity {
     private Long id;
 
     /**
+     * 逻辑删除
+     */
+    @TableId
+    private Integer isDelete = 0;
+
+    /**
      * 创建时间
      */
     @TableField(value = "created_time", fill = FieldFill.INSERT)
