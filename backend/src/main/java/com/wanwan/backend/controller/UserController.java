@@ -2,11 +2,14 @@ package com.wanwan.backend.controller;
 
 import com.wanwan.backend.common.ResultCode;
 import com.wanwan.backend.common.ResponseResult;
+import com.wanwan.backend.entity.Folder;
 import com.wanwan.backend.entity.User;
+import com.wanwan.backend.service.FolderService;
 import com.wanwan.backend.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -15,6 +18,9 @@ public class UserController {
 
     @Resource
     private UserService userService;
+    
+    @Resource
+    private FolderService folderService;
 
     @GetMapping
     public ResponseResult<?> getAllUsers() {
@@ -36,6 +42,17 @@ public class UserController {
     public ResponseResult<?> createUser(@RequestBody User user) {
         boolean success = userService.save(user);
         if (success) {
+            // 创建用户的根文件夹
+            Folder rootFolder = new Folder();
+            rootFolder.setName("我的收藏");
+            rootFolder.setParentId(null);
+            rootFolder.setUserId(user.getId());
+            rootFolder.setAncestors(null);
+            rootFolder.setCreatedTime(LocalDateTime.now());
+            rootFolder.setUpdatedTime(LocalDateTime.now());
+            rootFolder.setIsDelete(0);
+            folderService.save(rootFolder);
+            
             return ResponseResult.success("创建用户成功");
         } else {
             return ResponseResult.fail(ResultCode.ERROR, "创建用户失败");

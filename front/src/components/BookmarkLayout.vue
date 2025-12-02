@@ -16,7 +16,7 @@ const selectedFolderId = ref(null) // 默认未选中任何文件夹
 const loading = ref(false)
 const error = ref(null)
 
-// 文件夹表单状态
+// 文件夹表单状态（用于右键菜单创建和编辑）
 const showFolderForm = ref(false)
 const folderForm = ref({
   id: null,
@@ -25,7 +25,49 @@ const folderForm = ref({
 })
 const formMode = ref('add') // 'add' 或 'edit'
 
-// 创建文件夹（只支持根文件夹）
+// 组件挂载时获取数据
+onMounted(async () => {
+  await loadUserData()
+  await loadFolders()
+})
+
+// 加载用户信息
+const loadUserData = () => {
+  const userStr = localStorage.getItem('user')
+  if (userStr && userStr !== 'undefined' && userStr !== 'null') {
+    try {
+      currentUser.value = JSON.parse(userStr)
+    } catch (e) {
+      console.error('解析用户信息失败:', e)
+      localStorage.removeItem('user')
+    }
+  }
+}
+
+// 加载文件夹数据
+const loadFolders = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await api.get('/folders/tree')
+    if (response.data.code === 200) {
+      folders.value = response.data.data
+      // 如果有文件夹，默认选中第一个根文件夹
+      if (folders.value.length > 0) {
+        selectedFolderId.value = folders.value[0].id
+      }
+    } else {
+      error.value = response.data.message || '获取文件夹失败'
+    }
+  } catch (err) {
+    console.error('获取文件夹失败:', err)
+    error.value = '获取文件夹失败，请稍后重试'
+  } finally {
+    loading.value = false
+  }
+}
+
+// 创建文件夹（支持子文件夹）
 const handleCreateFolder = async () => {
   if (!folderForm.value.name.trim()) {
     alert('请输入文件夹名称')
@@ -35,7 +77,7 @@ const handleCreateFolder = async () => {
   try {
     const response = await api.post('/folders', {
       name: folderForm.value.name,
-      parentId: null // 只允许创建根文件夹
+      parentId: folderForm.value.parentId
     })
     
     if (response.data.code === 200) {
@@ -113,15 +155,21 @@ const handleDeleteFolder = async (folderId) => {
   }
 }
 
-// 取消文件夹表单（确保只支持根文件夹）
+// 取消文件夹表单
 const handleCancelFolderForm = () => {
   showFolderForm.value = false
   folderForm.value = {
     id: null,
     name: '',
-    parentId: null // 只允许创建根文件夹
+    parentId: null
   }
   formMode.value = 'add'
+}
+
+// 退出登录处理函数
+const handleLogout = async () => {
+  await logout()
+  router.push('/login')
 }
 
 // 提供状态和方法给子组件
@@ -136,54 +184,6 @@ provide('handleUpdateFolder', handleUpdateFolder)
 provide('handleDeleteFolder', handleDeleteFolder)
 provide('handleEditFolder', handleEditFolder)
 provide('handleCancelFolderForm', handleCancelFolderForm)
-
-// 组件挂载时获取数据
-onMounted(async () => {
-  await loadUserData()
-  await loadFolders()
-})
-
-// 加载用户信息
-const loadUserData = () => {
-  const userStr = localStorage.getItem('user')
-  if (userStr && userStr !== 'undefined' && userStr !== 'null') {
-    try {
-      currentUser.value = JSON.parse(userStr)
-    } catch (e) {
-      console.error('解析用户信息失败:', e)
-      localStorage.removeItem('user')
-    }
-  }
-}
-
-// 加载文件夹数据
-const loadFolders = async () => {
-  loading.value = true
-  error.value = null
-  try {
-    const response = await api.get('/folders/tree')
-    if (response.data.code === 200) {
-      folders.value = response.data.data
-      // 如果有文件夹，默认选中第一个根文件夹
-      if (folders.value.length > 0) {
-        selectedFolderId.value = folders.value[0].id
-      }
-    } else {
-      error.value = response.data.message || '获取文件夹失败'
-    }
-  } catch (err) {
-    console.error('获取文件夹失败:', err)
-    error.value = '获取文件夹失败，请稍后重试'
-  } finally {
-    loading.value = false
-  }
-}
-
-// 退出登录处理函数
-const handleLogout = async () => {
-  await logout()
-  router.push('/login')
-}
 </script>
 
 <template>
@@ -208,6 +208,31 @@ const handleLogout = async () => {
       <!-- 右侧书签内容 -->
       <div class="main-content">
         <BookmarkContent />
+      </div>
+    </div>
+    
+    <!-- 文件夹表单弹窗 -->
+    <div v-if="showFolderForm" class="folder-form-overlay">
+      <div class="folder-form">
+        <h3>{{ formMode === 'add' ? '创建子文件夹' : '编辑文件夹' }}</h3>
+        <div class="form-group">
+          <label for="folderName">文件夹名称:</label>
+          <input 
+            id="folderName"
+            v-model="folderForm.name" 
+            type="text" 
+            placeholder="请输入文件夹名称"
+            @keydown.enter="formMode === 'add' ? handleCreateFolder() : handleUpdateFolder()"
+          />
+        </div>
+        <div class="form-actions">
+          <button @click="formMode === 'add' ? handleCreateFolder() : handleUpdateFolder()">
+            {{ formMode === 'add' ? '创建' : '更新' }}
+          </button>
+          <button @click="handleCancelFolderForm()" class="cancel-btn">
+            取消
+          </button>
+        </div>
       </div>
     </div>
   </div>

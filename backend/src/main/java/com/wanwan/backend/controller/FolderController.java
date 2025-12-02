@@ -82,6 +82,7 @@ public class FolderController {
             // 如果是子文件夹，验证父文件夹是否存在且属于当前用户
             if (folder.getParentId() != null) {
                 Folder parentFolder = folderService.getById(folder.getParentId());
+                log.info("parentFolder: {}", parentFolder);
                 if (parentFolder == null || parentFolder.getIsDelete() != 0) {
                     return ResponseResult.fail(ResultCode.FOLDER_NOT_EXIST, "父文件夹不存在");
                 }

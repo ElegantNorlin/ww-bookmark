@@ -1,7 +1,9 @@
 package com.wanwan.backend.service.impl;
 
+import com.wanwan.backend.entity.Folder;
 import com.wanwan.backend.entity.User;
 import com.wanwan.backend.mapper.UserMapper;
+import com.wanwan.backend.service.FolderService;
 import com.wanwan.backend.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -19,6 +21,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
     
+    @Resource
+    private FolderService folderService;
+    
     @Override
     public boolean register(User user) {
         // 检查用户名是否已存在
@@ -35,7 +40,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setCreatedTime(LocalDateTime.now());
         user.setUpdatedTime(LocalDateTime.now());
         // 保存用户
-        return save(user);
+        boolean success = save(user);
+        
+        // 创建用户的根文件夹
+        if (success) {
+            Folder rootFolder = new Folder();
+            rootFolder.setName("我的收藏");
+            rootFolder.setParentId(null);
+            rootFolder.setUserId(user.getId());
+            rootFolder.setAncestors(null);
+            rootFolder.setCreatedTime(LocalDateTime.now());
+            rootFolder.setUpdatedTime(LocalDateTime.now());
+            rootFolder.setIsDelete(0);
+            folderService.save(rootFolder);
+        }
+        
+        return success;
     }
     
     @Override
