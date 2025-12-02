@@ -1,7 +1,10 @@
 package com.wanwan.backend.filter;
 
+import com.wanwan.backend.entity.User;
+import com.wanwan.backend.service.UserService;
 import com.wanwan.backend.util.JwtUtil;
 import com.wanwan.backend.util.RedisUtil;
+import com.wanwan.backend.util.UserContext;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     @Resource
     private RedisUtil redisUtil;
+    
+    @Resource
+    private UserService userService;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -69,10 +75,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 // 设置认证信息到SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                
+                // 将用户信息存储到ThreadLocal中
+                User user = userService.getByUsername(username);
+                if (user != null) {
+                    UserContext.setUser(user);
+                }
             }
         }
         
-        // 继续执行过滤器链
-        filterChain.doFilter(request, response);
+        try {
+            // 继续执行过滤器链
+            filterChain.doFilter(request, response);
+        } finally {
+            // 请求完成后清理ThreadLocal，避免内存泄漏
+            UserContext.clear();
+        }
     }
 }

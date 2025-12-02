@@ -4,99 +4,147 @@ import { useRouter } from 'vue-router'
 import FolderTree from './FolderTree.vue'
 import BookmarkContent from './BookmarkContent.vue'
 import { logout } from '../utils/axios'
+import api from '../utils/axios'
 
 const router = useRouter()
 const currentUser = ref(null)
 
 // 状态管理
-const folders = ref([
-  {
-    id: '1',
-    name: '根目录',
-    parentId: null,
-    children: [
-      {
-        id: '2',
-        name: '工作',
-        parentId: '1',
-        children: []
-      },
-      {
-        id: '3',
-        name: '学习',
-        parentId: '1',
-        children: [
-          {
-            id: '4',
-            name: '前端',
-            parentId: '3',
-            children: []
-          },
-          {
-            id: '5',
-            name: '后端',
-            parentId: '3',
-            children: []
-          }
-        ]
-      },
-      {
-        id: '6',
-        name: '生活',
-        parentId: '1',
-        children: []
+const folders = ref([])
+const bookmarks = ref([])
+const selectedFolderId = ref(null) // 默认未选中任何文件夹
+const loading = ref(false)
+const error = ref(null)
+
+// 文件夹表单状态
+const showFolderForm = ref(false)
+const folderForm = ref({
+  id: null,
+  name: '',
+  parentId: null
+})
+const formMode = ref('add') // 'add' 或 'edit'
+
+// 创建文件夹
+const handleCreateFolder = async () => {
+  if (!folderForm.value.name.trim()) {
+    alert('请输入文件夹名称')
+    return
+  }
+  
+  try {
+    const response = await api.post('/folders', {
+      name: folderForm.value.name,
+      parentId: folderForm.value.parentId
+    })
+    
+    if (response.data.code === 200) {
+      alert('文件夹创建成功')
+      handleCancelFolderForm()
+      await loadFolders() // 重新加载文件夹列表
+    } else {
+      alert(response.data.message || '创建文件夹失败')
+    }
+  } catch (err) {
+    console.error('创建文件夹失败:', err)
+    alert('创建文件夹失败，请稍后重试')
+  }
+}
+
+// 准备编辑文件夹
+const handleEditFolder = (folder) => {
+  folderForm.value = {
+    id: folder.id,
+    name: folder.name,
+    parentId: folder.parentId
+  }
+  formMode.value = 'edit'
+  showFolderForm.value = true
+}
+
+// 更新文件夹
+const handleUpdateFolder = async () => {
+  if (!folderForm.value.name.trim()) {
+    alert('请输入文件夹名称')
+    return
+  }
+  
+  try {
+    const response = await api.put(`/folders/${folderForm.value.id}`, {
+      name: folderForm.value.name,
+      parentId: folderForm.value.parentId
+    })
+    
+    if (response.data.code === 200) {
+      alert('文件夹更新成功')
+      handleCancelFolderForm()
+      await loadFolders() // 重新加载文件夹列表
+    } else {
+      alert(response.data.message || '更新文件夹失败')
+    }
+  } catch (err) {
+    console.error('更新文件夹失败:', err)
+    alert('更新文件夹失败，请稍后重试')
+  }
+}
+
+// 删除文件夹
+const handleDeleteFolder = async (folderId) => {
+  if (!confirm('确定要删除该文件夹吗？如果文件夹下有子文件夹，需要先删除子文件夹。')) {
+    return
+  }
+  
+  try {
+    const response = await api.delete(`/folders/${folderId}`)
+    
+    if (response.data.code === 200) {
+      alert('文件夹删除成功')
+      await loadFolders() // 重新加载文件夹列表
+      // 如果删除的是当前选中的文件夹，清除选中状态
+      if (selectedFolderId.value === folderId) {
+        selectedFolderId.value = folders.value.length > 0 ? folders.value[0].id : null
       }
-    ]
+    } else {
+      alert(response.data.message || '删除文件夹失败')
+    }
+  } catch (err) {
+    console.error('删除文件夹失败:', err)
+    alert('删除文件夹失败，请稍后重试')
   }
-])
+}
 
-const bookmarks = ref([
-  {
-    id: '1',
-    title: '百度',
-    url: 'https://www.baidu.com',
-    favicon: 'https://www.baidu.com/favicon.ico',
-    folderId: '1'
-  },
-  {
-    id: '1',
-    title: 'B站',
-    url: 'https://www.bilibili.com/',
-    favicon: 'https://www.bilibili.com/favicon.ico',
-    folderId: '1'
-  },
-  {
-    id: '2',
-    title: 'Google',
-    url: 'https://www.google.com',
-    favicon: 'https://www.google.com/favicon.ico',
-    folderId: '1'
-  },
-  {
-    id: '3',
-    title: 'GitHub',
-    url: 'https://github.com',
-    favicon: 'https://github.githubassets.com/favicons/favicon.svg',
-    folderId: '2'
-  },
-  {
-    id: '4',
-    title: 'Vue.js',
-    url: 'https://vuejs.org',
-    favicon: 'https://vuejs.org/favicon.ico',
-    folderId: '4'
+// 取消文件夹表单
+const handleCancelFolderForm = () => {
+  showFolderForm.value = false
+  folderForm.value = {
+    id: null,
+    name: '',
+    parentId: null
   }
-])
+  formMode.value = 'add'
+}
 
-const selectedFolderId = ref('1') // 默认选中根目录
-
-// 提供状态给子组件
+// 提供状态和方法给子组件
 provide('folders', folders)
 provide('bookmarks', bookmarks)
 provide('selectedFolderId', selectedFolderId)
+provide('showFolderForm', showFolderForm)
+provide('folderForm', folderForm)
+provide('formMode', formMode)
+provide('handleCreateFolder', handleCreateFolder)
+provide('handleUpdateFolder', handleUpdateFolder)
+provide('handleDeleteFolder', handleDeleteFolder)
+provide('handleEditFolder', handleEditFolder)
+provide('handleCancelFolderForm', handleCancelFolderForm)
 
-// 组件挂载时获取用户信息
-onMounted(() => {
+// 组件挂载时获取数据
+onMounted(async () => {
+  await loadUserData()
+  await loadFolders()
+})
+
+// 加载用户信息
+const loadUserData = () => {
   const userStr = localStorage.getItem('user')
   if (userStr && userStr !== 'undefined' && userStr !== 'null') {
     try {
@@ -106,7 +154,30 @@ onMounted(() => {
       localStorage.removeItem('user')
     }
   }
-})
+}
+
+// 加载文件夹数据
+const loadFolders = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await api.get('/folders/tree')
+    if (response.data.code === 200) {
+      folders.value = response.data.data
+      // 如果有文件夹，默认选中第一个根文件夹
+      if (folders.value.length > 0) {
+        selectedFolderId.value = folders.value[0].id
+      }
+    } else {
+      error.value = response.data.message || '获取文件夹失败'
+    }
+  } catch (err) {
+    console.error('获取文件夹失败:', err)
+    error.value = '获取文件夹失败，请稍后重试'
+  } finally {
+    loading.value = false
+  }
+}
 
 // 退出登录处理函数
 const handleLogout = async () => {

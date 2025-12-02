@@ -6,6 +6,7 @@ import com.wanwan.backend.entity.User;
 import com.wanwan.backend.service.UserService;
 import com.wanwan.backend.util.JwtUtil;
 import com.wanwan.backend.util.RedisUtil;
+import com.wanwan.backend.util.UserContext;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -61,6 +62,9 @@ public class LoginController {
             // 将访问令牌和刷新令牌存储到Redis中，设置过期时间
             redisUtil.set("access_token:" + username, accessToken, 30, TimeUnit.MINUTES);
             redisUtil.set("refresh_token:" + username, refreshToken, 7, TimeUnit.DAYS);
+            
+            // 将用户信息存储到ThreadLocal中
+            UserContext.setUser(user);
             
             Map<String, Object> data = new HashMap<>();
             data.put("access_token", accessToken);
