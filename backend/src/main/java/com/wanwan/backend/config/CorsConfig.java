@@ -15,7 +15,7 @@ public class CorsConfig implements WebMvcConfigurer {
         // 允许所有跨域请求
         registry.addMapping("/**")
                 // 允许的源（前端地址）
-                .allowedOrigins("http://localhost:5173", "http://localhost:5174")
+                .allowedOrigins("http://127.0.0.1:5173", "http://127.0.0.1:5174")
                 // 允许的请求方法
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 // 允许的请求头
