@@ -104,4 +104,19 @@ api.interceptors.response.use(
   }
 )
 
+// 退出登录函数
+export const logout = async () => {
+  try {
+    await api.post('/logout')
+  } catch (error) {
+    // 即使后端请求失败，也要清除本地存储
+    console.error('退出登录请求失败:', error)
+  } finally {
+    // 清除本地存储中的token和用户信息
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    localStorage.removeItem('user')
+  }
+}
+
 export default api

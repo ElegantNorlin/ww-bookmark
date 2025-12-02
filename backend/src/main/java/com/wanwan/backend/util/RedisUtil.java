@@ -32,5 +32,13 @@ public class RedisUtil {
         return redisTemplate.opsForValue().get(key);
     }
 
+    /**
+     * 从Redis删除数据
+     * @param key 键
+     */
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
+
 
 }

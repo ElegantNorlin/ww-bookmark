@@ -129,4 +129,36 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    /**
+     * 用户退出登录
+     * @param token 请求头中的JWT令牌
+     * @return 退出结果
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, Object>> logout(@RequestHeader("Authorization") String token) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 移除Bearer前缀
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            
+            // 从令牌中获取用户名
+            String username = jwtUtil.getUsernameFromToken(token);
+            
+            // 从Redis中删除访问令牌和刷新令牌
+            redisUtil.delete("access_token:" + username);
+            redisUtil.delete("refresh_token:" + username);
+            
+            response.put("success", true);
+            response.put("message", "退出登录成功");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "退出登录失败");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

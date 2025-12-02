@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `folder` (
   `parent_id` BIGINT DEFAULT NULL COMMENT '父文件夹ID，null表示根文件夹',
   `ancestors` TEXT DEFAULT NULL COMMENT '祖先节点ID集合：如「1,12」（1=顶级ID，12=父ID）',
   `name` VARCHAR(100) NOT NULL COMMENT '文件夹名称',
-  `id_delete` INT(5) DEFAULT NULL COMMENT '是否逻辑删除',
+  `is_delete` INT(5) DEFAULT NULL COMMENT '是否逻辑删除',
   `created_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文件夹表';
