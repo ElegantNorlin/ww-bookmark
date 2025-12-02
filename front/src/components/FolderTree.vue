@@ -58,17 +58,7 @@ const hideContextMenu = () => {
   contextMenu.value.visible = false
 }
 
-// 创建子文件夹
-const createSubFolder = (parentFolder) => {
-  hideContextMenu()
-  folderForm.value = {
-    id: null,
-    name: '',
-    parentId: parentFolder ? parentFolder.id : null
-  }
-  formMode.value = 'add'
-  showFolderForm.value = true
-}
+// 删除了createSubFolder方法，不再支持创建子文件夹
 
 // 编辑文件夹
 const editFolder = (folder) => {
@@ -178,9 +168,6 @@ const renderFolderItem = (folder) => {
       class="context-menu"
       :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
     >
-      <div class="context-menu-item" @click="createSubFolder(contextMenu.folder)">
-        📁 创建子文件夹
-      </div>
       <div class="context-menu-item" @click="editFolder(contextMenu.folder)">
         ✏️ 编辑文件夹
       </div>

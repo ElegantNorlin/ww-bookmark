@@ -25,7 +25,7 @@ const folderForm = ref({
 })
 const formMode = ref('add') // 'add' 或 'edit'
 
-// 创建文件夹
+// 创建文件夹（只支持根文件夹）
 const handleCreateFolder = async () => {
   if (!folderForm.value.name.trim()) {
     alert('请输入文件夹名称')
@@ -35,7 +35,7 @@ const handleCreateFolder = async () => {
   try {
     const response = await api.post('/folders', {
       name: folderForm.value.name,
-      parentId: folderForm.value.parentId
+      parentId: null // 只允许创建根文件夹
     })
     
     if (response.data.code === 200) {
@@ -113,13 +113,13 @@ const handleDeleteFolder = async (folderId) => {
   }
 }
 
-// 取消文件夹表单
+// 取消文件夹表单（确保只支持根文件夹）
 const handleCancelFolderForm = () => {
   showFolderForm.value = false
   folderForm.value = {
     id: null,
     name: '',
-    parentId: null
+    parentId: null // 只允许创建根文件夹
   }
   formMode.value = 'add'
 }

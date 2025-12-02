@@ -81,7 +81,6 @@ const handleBookmarkClick = (bookmark) => {
       <h2>{{ currentFolderName }}</h2>
       <div class="header-actions">
         <button class="add-btn">添加书签</button>
-        <button class="add-folder-btn">添加子文件夹</button>
       </div>
     </div>
     
@@ -180,14 +179,7 @@ const handleBookmarkClick = (bookmark) => {
   background-color: #45a049;
 }
 
-.add-folder-btn {
-  background-color: #2196F3;
-  color: white;
-}
-
-.add-folder-btn:hover {
-  background-color: #1976D2;
-}
+/* 已删除添加子文件夹按钮样式 */
 
 .bookmark-list {
   flex: 1;
