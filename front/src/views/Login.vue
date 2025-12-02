@@ -66,7 +66,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axios from '../utils/axios'
 
 const router = useRouter()
 
@@ -98,21 +98,22 @@ const handleSubmit = async () => {
   try {
     if (isLogin.value) {
       // 登录请求
-      const response = await axios.post('http://localhost:8080/api/login', {
+      const response = await axios.post('/login', {
         username: form.value.username,
         password: form.value.password
       })
       
-      // 保存token和用户信息到localStorage
-      localStorage.setItem('access_token', response.data.access_token)
-      localStorage.setItem('refresh_token', response.data.refresh_token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
+      // 保存token和用户信息到localStorage - 适配后端ResponseResult数据结构
+      // 后端返回的数据结构是{code, message, data, timestamp}，token等信息在data字段中
+      localStorage.setItem('access_token', response.data.data.access_token)
+      localStorage.setItem('refresh_token', response.data.data.refresh_token)
+      localStorage.setItem('user', JSON.stringify(response.data.data.user))
       
       // 跳转到首页
       router.push('/')
     } else {
       // 注册请求
-      const response = await axios.post('http://localhost:8080/api/register', {
+      const response = await axios.post('/register', {
         username: form.value.username,
         email: form.value.email,
         password: form.value.password

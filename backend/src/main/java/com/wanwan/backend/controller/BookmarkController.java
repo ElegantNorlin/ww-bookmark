@@ -1,5 +1,7 @@
 package com.wanwan.backend.controller;
 
+import com.wanwan.backend.common.ResultCode;
+import com.wanwan.backend.common.ResponseResult;
 import com.wanwan.backend.entity.Bookmark;
 import com.wanwan.backend.service.BookmarkService;
 import jakarta.annotation.Resource;
@@ -15,28 +17,49 @@ public class BookmarkController {
     private BookmarkService bookmarkService;
 
     @GetMapping
-    public List<Bookmark> getAllBookmarks() {
-        return bookmarkService.list();
+    public ResponseResult<?> getAllBookmarks() {
+        List<Bookmark> bookmarks = bookmarkService.list();
+        return ResponseResult.success(bookmarks);
     }
 
     @GetMapping("/{id}")
-    public Bookmark getBookmarkById(@PathVariable Long id) {
-        return bookmarkService.getById(id);
+    public ResponseResult<?> getBookmarkById(@PathVariable Long id) {
+        Bookmark bookmark = bookmarkService.getById(id);
+        if (bookmark != null) {
+            return ResponseResult.success(bookmark);
+        } else {
+            return ResponseResult.fail(ResultCode.NOT_FOUND);
+        }
     }
 
     @PostMapping
-    public boolean createBookmark(@RequestBody Bookmark bookmark) {
-        return bookmarkService.save(bookmark);
+    public ResponseResult<?> createBookmark(@RequestBody Bookmark bookmark) {
+        boolean success = bookmarkService.save(bookmark);
+        if (success) {
+            return ResponseResult.success("创建书签成功");
+        } else {
+            return ResponseResult.fail(ResultCode.ERROR, "创建书签失败");
+        }
     }
 
     @PutMapping("/{id}")
-    public boolean updateBookmark(@PathVariable Long id, @RequestBody Bookmark bookmark) {
+    public ResponseResult<?> updateBookmark(@PathVariable Long id, @RequestBody Bookmark bookmark) {
         bookmark.setId(id);
-        return bookmarkService.updateById(bookmark);
+        boolean success = bookmarkService.updateById(bookmark);
+        if (success) {
+            return ResponseResult.success("更新书签成功");
+        } else {
+            return ResponseResult.fail(ResultCode.ERROR, "更新书签失败");
+        }
     }
 
     @DeleteMapping("/{id}")
-    public boolean deleteBookmark(@PathVariable Long id) {
-        return bookmarkService.removeById(id);
+    public ResponseResult<?> deleteBookmark(@PathVariable Long id) {
+        boolean success = bookmarkService.removeById(id);
+        if (success) {
+            return ResponseResult.success("删除书签成功");
+        } else {
+            return ResponseResult.fail(ResultCode.ERROR, "删除书签失败");
+        }
     }
 }

@@ -98,8 +98,13 @@ provide('selectedFolderId', selectedFolderId)
 // 组件挂载时获取用户信息
 onMounted(() => {
   const userStr = localStorage.getItem('user')
-  if (userStr) {
-    currentUser.value = JSON.parse(userStr)
+  if (userStr && userStr !== 'undefined' && userStr !== 'null') {
+    try {
+      currentUser.value = JSON.parse(userStr)
+    } catch (e) {
+      console.error('解析用户信息失败:', e)
+      localStorage.removeItem('user')
+    }
   }
 })
 

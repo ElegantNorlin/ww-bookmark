@@ -1,13 +1,13 @@
 package com.wanwan.backend.controller;
 
+import com.wanwan.backend.common.ResultCode;
+import com.wanwan.backend.common.ResponseResult;
 import com.wanwan.backend.entity.User;
 import com.wanwan.backend.service.UserService;
 import com.wanwan.backend.util.JwtUtil;
 import com.wanwan.backend.util.RedisUtil;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -33,18 +33,12 @@ public class LoginController {
      * @return 注册结果
      */
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody User user) {
-        Map<String, Object> response = new HashMap<>();
-        
+    public ResponseResult<?> register(@RequestBody User user) {
         boolean success = userService.register(user);
         if (success) {
-            response.put("success", true);
-            response.put("message", "注册成功");
-            return ResponseEntity.ok(response);
+            return ResponseResult.success("注册成功");
         } else {
-            response.put("success", false);
-            response.put("message", "用户名或邮箱已存在");
-            return ResponseEntity.badRequest().body(response);
+            return ResponseResult.fail(ResultCode.USER_EXIST);
         }
     }
     
@@ -54,11 +48,9 @@ public class LoginController {
      * @return 登录结果和JWT令牌
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseResult<?> login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
-        
-        Map<String, Object> response = new HashMap<>();
         
         User user = userService.login(username, password);
         if (user != null) {
@@ -70,16 +62,14 @@ public class LoginController {
             redisUtil.set("access_token:" + username, accessToken, 30, TimeUnit.MINUTES);
             redisUtil.set("refresh_token:" + username, refreshToken, 7, TimeUnit.DAYS);
             
-            response.put("success", true);
-            response.put("message", "登录成功");
-            response.put("access_token", accessToken);
-            response.put("refresh_token", refreshToken);
-            response.put("user", user);
-            return ResponseEntity.ok(response);
+            Map<String, Object> data = new HashMap<>();
+            data.put("access_token", accessToken);
+            data.put("refresh_token", refreshToken);
+            data.put("user", user);
+            
+            return ResponseResult.success(data, "登录成功");
         } else {
-            response.put("success", false);
-            response.put("message", "用户名或密码错误");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            return ResponseResult.fail(ResultCode.USERNAME_PASSWORD_ERROR);
         }
     }
     
@@ -89,17 +79,13 @@ public class LoginController {
      * @return 新的访问令牌
      */
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, Object>> refresh(@RequestBody Map<String, String> refreshRequest) {
+    public ResponseResult<?> refresh(@RequestBody Map<String, String> refreshRequest) {
         String refreshToken = refreshRequest.get("refresh_token");
-        
-        Map<String, Object> response = new HashMap<>();
         
         try {
             // 验证刷新令牌是否有效
             if (!jwtUtil.validateToken(refreshToken)) {
-                response.put("success", false);
-                response.put("message", "无效的刷新令牌");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+                return ResponseResult.fail(ResultCode.TOKEN_INVALID);
             }
             
             // 从刷新令牌中获取用户名
@@ -108,9 +94,7 @@ public class LoginController {
             // 检查Redis中是否存在该刷新令牌
             String storedRefreshToken = (String) redisUtil.get("refresh_token:" + username);
             if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
-                response.put("success", false);
-                response.put("message", "刷新令牌已过期或无效");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+                return ResponseResult.fail(ResultCode.REFRESH_TOKEN_INVALID);
             }
             
             // 生成新的访问令牌
@@ -119,14 +103,12 @@ public class LoginController {
             // 更新Redis中的访问令牌
             redisUtil.set("access_token:" + username, newAccessToken, 30, TimeUnit.MINUTES);
             
-            response.put("success", true);
-            response.put("message", "令牌刷新成功");
-            response.put("access_token", newAccessToken);
-            return ResponseEntity.ok(response);
+            Map<String, Object> data = new HashMap<>();
+            data.put("access_token", newAccessToken);
+            
+            return ResponseResult.success(data, "令牌刷新成功");
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "令牌刷新失败");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseResult.fail(ResultCode.ERROR, "令牌刷新失败");
         }
     }
     
@@ -136,9 +118,7 @@ public class LoginController {
      * @return 退出结果
      */
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, Object>> logout(@RequestHeader("Authorization") String token) {
-        Map<String, Object> response = new HashMap<>();
-        
+    public ResponseResult<?> logout(@RequestHeader("Authorization") String token) {
         try {
             // 移除Bearer前缀
             if (token.startsWith("Bearer ")) {
@@ -152,13 +132,9 @@ public class LoginController {
             redisUtil.delete("access_token:" + username);
             redisUtil.delete("refresh_token:" + username);
             
-            response.put("success", true);
-            response.put("message", "退出登录成功");
-            return ResponseEntity.ok(response);
+            return ResponseResult.success("退出登录成功");
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "退出登录失败");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseResult.fail(ResultCode.ERROR, "退出登录失败");
         }
     }
 }

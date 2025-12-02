@@ -1,5 +1,7 @@
 package com.wanwan.backend.controller;
 
+import com.wanwan.backend.common.ResultCode;
+import com.wanwan.backend.common.ResponseResult;
 import com.wanwan.backend.entity.User;
 import com.wanwan.backend.service.UserService;
 import jakarta.annotation.Resource;
@@ -15,28 +17,49 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.list();
+    public ResponseResult<?> getAllUsers() {
+        List<User> users = userService.list();
+        return ResponseResult.success(users);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getById(id);
+    public ResponseResult<?> getUserById(@PathVariable Long id) {
+        User user = userService.getById(id);
+        if (user != null) {
+            return ResponseResult.success(user);
+        } else {
+            return ResponseResult.fail(ResultCode.USER_NOT_EXIST);
+        }
     }
 
     @PostMapping
-    public boolean createUser(@RequestBody User user) {
-        return userService.save(user);
+    public ResponseResult<?> createUser(@RequestBody User user) {
+        boolean success = userService.save(user);
+        if (success) {
+            return ResponseResult.success("创建用户成功");
+        } else {
+            return ResponseResult.fail(ResultCode.ERROR, "创建用户失败");
+        }
     }
 
     @PutMapping("/{id}")
-    public boolean updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseResult<?> updateUser(@PathVariable Long id, @RequestBody User user) {
         user.setId(id);
-        return userService.updateById(user);
+        boolean success = userService.updateById(user);
+        if (success) {
+            return ResponseResult.success("更新用户成功");
+        } else {
+            return ResponseResult.fail(ResultCode.ERROR, "更新用户失败");
+        }
     }
 
     @DeleteMapping("/{id}")
-    public boolean deleteUser(@PathVariable Long id) {
-        return userService.removeById(id);
+    public ResponseResult<?> deleteUser(@PathVariable Long id) {
+        boolean success = userService.removeById(id);
+        if (success) {
+            return ResponseResult.success("删除用户成功");
+        } else {
+            return ResponseResult.fail(ResultCode.ERROR, "删除用户失败");
+        }
     }
 }

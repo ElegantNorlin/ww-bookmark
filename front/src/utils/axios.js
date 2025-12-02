@@ -3,7 +3,7 @@ import router from '../router'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'http://localhost:8081/api',
   timeout: 10000
 })
 
@@ -12,7 +12,7 @@ const refreshToken = async () => {
   const refreshToken = localStorage.getItem('refresh_token')
   
   try {
-    const response = await axios.post('http://localhost:8080/api/refresh', {
+    const response = await api.post('/refresh', {
       refresh_token: refreshToken
     })
     
@@ -49,10 +49,18 @@ api.interceptors.request.use(
   config => {
     // 从localStorage获取access_token
     const accessToken = localStorage.getItem('access_token')
-    if (accessToken) {
+    
+    // 检查是否为登录或注册请求
+    const isLoginRequest = config.url === '/login' || config.url === 'login'
+    const isRegisterRequest = config.url === '/register' || config.url === 'register'
+    
+    // 除了登录和注册请求外，其他请求都需要携带Authorization头
+    if (!isLoginRequest && !isRegisterRequest) {
       // 添加Authorization请求头
       config.headers.Authorization = `Bearer ${accessToken}`
+      console.log('添加Authorization头到请求:', config.url)
     }
+    
     return config
   },
   error => {
@@ -107,15 +115,23 @@ api.interceptors.response.use(
 // 退出登录函数
 export const logout = async () => {
   try {
-    await api.post('/logout')
+    // 显式获取token并记录日志
+    const accessToken = localStorage.getItem('access_token')
+    console.log('执行退出登录，token值:', accessToken)
+    
+    // 发送退出登录请求，不检查token有效性
+    const response = await api.post('/logout')
+    console.log('退出登录成功:', response)
+    return response
   } catch (error) {
     // 即使后端请求失败，也要清除本地存储
-    console.error('退出登录请求失败:', error)
+    console.error('退出登录请求失败:', error.response || error.message || error)
   } finally {
     // 清除本地存储中的token和用户信息
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('user')
+    console.log('本地令牌已清除')
   }
 }
 
