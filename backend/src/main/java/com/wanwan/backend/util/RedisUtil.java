@@ -1,7 +1,6 @@
 package com.wanwan.backend.util;
 
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -33,42 +32,5 @@ public class RedisUtil {
         return redisTemplate.opsForValue().get(key);
     }
 
-    /**
-     * 删除Redis中的数据
-     * @param key 键
-     * @return 是否删除成功
-     */
-    public Boolean delete(String key) {
-        return redisTemplate.delete(key);
-    }
 
-    /**
-     * 设置过期时间
-     * @param key 键
-     * @param expireTime 过期时间
-     * @param timeUnit 时间单位
-     * @return 是否设置成功
-     */
-    public Boolean expire(String key, long expireTime, TimeUnit timeUnit) {
-        return redisTemplate.expire(key, expireTime, timeUnit);
-    }
-
-    /**
-     * 获取过期时间
-     * @param key 键
-     * @param timeUnit 时间单位
-     * @return 过期时间
-     */
-    public Long getExpire(String key, TimeUnit timeUnit) {
-        return redisTemplate.getExpire(key, timeUnit);
-    }
-
-    /**
-     * 判断键是否存在
-     * @param key 键
-     * @return 是否存在
-     */
-    public Boolean hasKey(String key) {
-        return redisTemplate.hasKey(key);
-    }
 }

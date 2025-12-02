@@ -69,19 +69,7 @@ public class JwtUtil {
         return claims.getSubject();
     }
     
-    /**
-     * 从JWT令牌中获取过期时间
-     * @param token JWT令牌
-     * @return 过期时间
-     */
-    public Date getExpirationDateFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getExpiration();
-    }
+
     
     /**
      * 验证JWT令牌是否有效
@@ -100,27 +88,7 @@ public class JwtUtil {
         }
     }
     
-    /**
-     * 判断令牌是否过期
-     * @param token JWT令牌
-     * @return 是否过期
-     */
-    public boolean isTokenExpired(String token) {
-        Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
-    }
+
     
-    /**
-     * 使用刷新令牌生成新的访问令牌
-     * @param refreshToken 刷新令牌
-     * @return 新的访问令牌
-     */
-    public String refreshAccessToken(String refreshToken) {
-        if (!validateToken(refreshToken)) {
-            throw new IllegalArgumentException("Invalid refresh token");
-        }
-        
-        String username = getUsernameFromToken(refreshToken);
-        return generateAccessToken(username);
-    }
+
 }
