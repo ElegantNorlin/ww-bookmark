@@ -1,10 +1,8 @@
 package com.wanwan.backend;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@MapperScan("com.wanwan.backend.mapper")
 @SpringBootApplication
 public class BackendApplication {
 
